@@ -7,3 +7,4 @@ edition = "2021"
 
 [dependencies]
 lindera = { version = "0.17.0", features = ["full"] }
+regex = "1.6.0"
