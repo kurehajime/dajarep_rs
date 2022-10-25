@@ -8,20 +8,20 @@ use word::Word;
 mod sentence;
 mod word;
 
-pub fn isDajare(sentence: &Sentence) -> Option<String> {
+pub fn is_dajare(sentence: &Sentence) -> Option<String> {
     for word in &sentence.words {
         if word.wtype == "名詞" && word.kana.len() > 1 {
-            let rStr = &word.str;
-            let rKana = &word.kana;
-            let hitStr = countx(&sentence.str, rStr);
-            let hitKana1 = countx(&sentence.kana, &fixWord(rKana));
-            let hitKana2 = countx(&fixSentence(&sentence.kana), rKana);
-            let hitKana3 = countx(&sentence.yomi, rKana);
-            let hitKana4 = countx(&fixSentence(&sentence.yomi), rKana);
-            let kanaArray = vec![hitKana1, hitKana2, hitKana3, hitKana4];
-            let maxKanaCount = kanaArray.iter().max().unwrap();
+            let w_str = &word.str;
+            let w_kana = &word.kana;
+            let str_count = countx(&sentence.str, w_str);
+            let kana_count_1 = countx(&sentence.kana, &fix_word(w_kana));
+            let kana_count_2 = countx(&fix_sentence(&sentence.kana), w_kana);
+            let kana_count_3 = countx(&sentence.yomi, w_kana);
+            let kana_count_4 = countx(&fix_sentence(&sentence.yomi), w_kana);
+            let kana_array = vec![kana_count_1, kana_count_2, kana_count_3, kana_count_4];
+            let max_kana_count = kana_array.iter().max().unwrap();
 
-            if hitStr < *maxKanaCount {
+            if str_count < *max_kana_count {
                 return Some(word.kana.to_string());
             }
         }
@@ -37,7 +37,7 @@ fn countx(text: &str, target: &str) -> i32 {
 }
 
 //置き換え可能な文字を考慮した正規表現を返す。
-fn fixWord(text: &str) -> String {
+fn fix_word(text: &str) -> String {
     let text = text.replace("ッ", "[ツッ]?");
     let text = text.replace("ァ", "[アァ]?");
     let text = text.replace("ィ", "[イィ]?");
@@ -63,7 +63,7 @@ fn replacex(text: String, from: &str, to: &str) -> String {
     Regex::new(from).unwrap().replace_all(&text, to).to_string()
 }
 //本文から省略可能文字を消したパターンを返す。
-fn fixSentence(text: &str) -> String {
+fn fix_sentence(text: &str) -> String {
     let text = text.replace("ッ", "");
     let text = text.replace("ー", "");
     let text = text.replace("、", "");
@@ -74,7 +74,7 @@ fn fixSentence(text: &str) -> String {
     text
 }
 
-pub fn getSentences(text: &str) -> Result<Vec<Sentence>, Error> {
+pub fn get_sentences(text: &str) -> Result<Vec<Sentence>, Error> {
     let mut sentences: Vec<Sentence> = Vec::new();
     let tokenizer = Tokenizer::new().unwrap();
 
