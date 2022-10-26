@@ -29,50 +29,6 @@ pub fn is_dajare(sentence: &Sentence) -> Option<String> {
     None
 }
 
-fn count_regex(text: &str, target: &str) -> i32 {
-    let re = Regex::new(target).unwrap();
-    let caps = re.find_iter(text).count();
-    caps.try_into().unwrap()
-}
-
-//置き換え可能な文字を考慮した正規表現を返す。
-fn fix_word(text: &str) -> String {
-    let text = text.replace("ッ", "[ツッ]?");
-    let text = text.replace("ァ", "[アァ]?");
-    let text = text.replace("ィ", "[イィ]?");
-    let text = text.replace("ゥ", "[ウゥ]?");
-    let text = text.replace("ェ", "[エェ]?");
-    let text = text.replace("ォ", "[オォ]?");
-    let text = text.replace("ズ", "[ズヅ]");
-    let text = text.replace("ヅ", "[ズヅ]");
-    let text = text.replace("ヂ", "[ジヂ]");
-    let text = text.replace("ジ", "[ジヂ]");
-    let text = replace_regex(&text, "([アカサタナハマヤラワャ])ー", "$1[アァ]?");
-    let text = replace_regex(&text, "([イキシチニヒミリ])ー", "$1[イィ]?");
-    let text = replace_regex(&text, "([ウクスツヌフムユルュ])ー", "$1[ウゥ]?");
-    let text = replace_regex(&text, "([エケセテネへメレ])ー", "$1[エェ]?");
-    let text = replace_regex(&text, "([オコソトノホモヨロヲョ])ー", "$1[ウゥオォ]?");
-    let text = text.replace("ャ", "[ヤャ]");
-    let text = text.replace("ュ", "[ユュ]");
-    let text = text.replace("ョ", "[ヨョ]");
-    let text = text.replace("ー", "[ー]?");
-    text
-}
-fn replace_regex(text: &str, from: &str, to: &str) -> String {
-    Regex::new(from).unwrap().replace_all(&text, to).to_string()
-}
-//本文から省略可能文字を消したパターンを返す。
-fn fix_sentence(text: &str) -> String {
-    let text = text.replace("ッ", "");
-    let text = text.replace("ー", "");
-    let text = text.replace("、", "");
-    let text = text.replace(",", "");
-    let text = text.replace("　", "");
-    let text = text.replace("　", "");
-    let text = text.replace(" ", "");
-    text
-}
-
 pub fn get_sentences(text: &str) -> Result<Vec<Sentence>, Error> {
     let mut sentences: Vec<Sentence> = Vec::new();
     let tokenizer = Tokenizer::new().unwrap();
@@ -113,4 +69,50 @@ pub fn get_sentences(text: &str) -> Result<Vec<Sentence>, Error> {
         sentences.push(sentence);
     }
     Ok(sentences)
+}
+
+//置き換え可能な文字を考慮した正規表現を返す。
+fn fix_word(text: &str) -> String {
+    let text = text.replace("ッ", "[ツッ]?");
+    let text = text.replace("ァ", "[アァ]?");
+    let text = text.replace("ィ", "[イィ]?");
+    let text = text.replace("ゥ", "[ウゥ]?");
+    let text = text.replace("ェ", "[エェ]?");
+    let text = text.replace("ォ", "[オォ]?");
+    let text = text.replace("ズ", "[ズヅ]");
+    let text = text.replace("ヅ", "[ズヅ]");
+    let text = text.replace("ヂ", "[ジヂ]");
+    let text = text.replace("ジ", "[ジヂ]");
+    let text = replace_regex(&text, "([アカサタナハマヤラワャ])ー", "$1[アァ]?");
+    let text = replace_regex(&text, "([イキシチニヒミリ])ー", "$1[イィ]?");
+    let text = replace_regex(&text, "([ウクスツヌフムユルュ])ー", "$1[ウゥ]?");
+    let text = replace_regex(&text, "([エケセテネへメレ])ー", "$1[エェ]?");
+    let text = replace_regex(&text, "([オコソトノホモヨロヲョ])ー", "$1[ウゥオォ]?");
+    let text = text.replace("ャ", "[ヤャ]");
+    let text = text.replace("ュ", "[ユュ]");
+    let text = text.replace("ョ", "[ヨョ]");
+    let text = text.replace("ー", "[ー]?");
+    text
+}
+
+//本文から省略可能文字を消したパターンを返す。
+fn fix_sentence(text: &str) -> String {
+    let text = text.replace("ッ", "");
+    let text = text.replace("ー", "");
+    let text = text.replace("、", "");
+    let text = text.replace(",", "");
+    let text = text.replace("　", "");
+    let text = text.replace("　", "");
+    let text = text.replace(" ", "");
+    text
+}
+
+fn replace_regex(text: &str, from: &str, to: &str) -> String {
+    Regex::new(from).unwrap().replace_all(&text, to).to_string()
+}
+
+fn count_regex(text: &str, target: &str) -> i32 {
+    let re = Regex::new(target).unwrap();
+    let caps = re.find_iter(text).count();
+    caps.try_into().unwrap()
 }
