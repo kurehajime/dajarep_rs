@@ -7,6 +7,28 @@ use sentence::Sentence;
 use std::fmt::Error;
 use word::Word;
 
+pub fn Dajarep(text: String) -> Result<Vec<String>, Error> {
+    let sentences = get_sentences(&text);
+    let mut dajares = vec![];
+
+    match sentences {
+        Ok(result) => {
+            for sentence in result {
+                match is_dajare(&sentence) {
+                    Some(_) => {
+                        dajares.push(sentence.str);
+                    }
+                    None => {}
+                };
+            }
+        }
+        Err(err) => {
+            println!("Error: {}", err);
+        }
+    };
+    Ok(dajares)
+}
+
 pub fn is_dajare(sentence: &Sentence) -> Option<String> {
     for word in &sentence.words {
         if word.wtype == "名詞" && word.kana.len() > 1 {
