@@ -1,12 +1,28 @@
 fn main() {
-    let text = "布団が吹っ飛んだ";
-    let sentences = dajarep::get_sentences(text).unwrap();
-    let result = dajarep::is_dajare(&sentences[0]);
+    let text = r#"
+人民の人民による人民のための政治
+アルミ缶の上にあるミカン
+トンネルを抜けるとそこは雪国であった
+智代子のチョコ
+布団が吹っ飛んだ
+我輩は猫である
+猫が寝転んだ
+その意見にはついていけん
+靴を靴箱に入れる
+傘を貸さない
+イカは如何なものか
+親譲りの無鉄砲で子供の時から損ばかりしている  
+"#;
+    let result = dajarep::dajarep(text);
 
     match result {
-        Some(word) => {
-            println!("「{}」はダジャレです。({})", text, word);
+        Ok(words) => {
+            for word in words {
+                println!("{}", word);
+            }
         }
-        None => {}
+        Err(err) => {
+            println!("Error: {}", err);
+        }
     }
 }

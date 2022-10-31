@@ -7,8 +7,8 @@ use sentence::Sentence;
 use std::fmt::Error;
 use word::Word;
 
-pub fn Dajarep(text: String) -> Result<Vec<String>, Error> {
-    let sentences = get_sentences(&text);
+pub fn dajarep(text: &str) -> Result<Vec<String>, Error> {
+    let sentences = get_sentences(text);
     let mut dajares = vec![];
 
     match sentences {
@@ -73,6 +73,9 @@ pub fn get_sentences(text: &str) -> Result<Vec<Sentence>, Error> {
         let mut kana = String::new();
         let mut yomi = String::new();
         for t in tokens {
+            if tokenizer.word_detail(t.word_id).unwrap().len() < 8 {
+                continue;
+            }
             let w = Word {
                 str: t.text.to_string(),
                 kana: tokenizer.word_detail(t.word_id).unwrap()[7].clone(),
