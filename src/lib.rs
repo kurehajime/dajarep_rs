@@ -177,6 +177,7 @@ mod test {
             .split("\n");
 
         let result = dajarep(input).unwrap();
+        assert_eq!(answer.clone().count(), result.len());
         answer.zip(result.iter()).for_each(|(a, r)| {
             assert_eq!(a, r);
         });
