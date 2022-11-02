@@ -1,3 +1,7 @@
+use std::path::PathBuf;
+
+use clap::Parser;
+
 fn main() {
     let text = r#"
 人民の人民による人民のための政治
@@ -25,4 +29,11 @@ fn main() {
             println!("Error: {}", err);
         }
     }
+}
+
+#[derive(Debug, Parser)]
+#[clap(name = "struct", author, about, version)]
+struct Args {
+    #[clap(short, long, help = "encode")]
+    encode: Option<String>,
 }
