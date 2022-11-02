@@ -1,7 +1,11 @@
 mod sentence;
 mod word;
 
-use lindera::tokenizer::Tokenizer;
+use lindera::{
+    mode::Mode,
+    tokenizer::{DictionaryConfig, Tokenizer, TokenizerConfig},
+    DictionaryKind,
+};
 use regex::Regex;
 use sentence::Sentence;
 use std::fmt::Error;
@@ -53,7 +57,16 @@ pub fn is_dajare(sentence: &Sentence) -> Option<String> {
 
 pub fn get_sentences(text: &str) -> Result<Vec<Sentence>, Error> {
     let mut sentences: Vec<Sentence> = Vec::new();
-    let tokenizer = Tokenizer::new().unwrap();
+    let dictionary = DictionaryConfig {
+        kind: Some(DictionaryKind::IPADIC),
+        path: None,
+    };
+    let config = TokenizerConfig {
+        dictionary,
+        mode: Mode::Normal,
+        user_dictionary: None,
+    };
+    let tokenizer = Tokenizer::with_config(config).unwrap();
 
     // 終了系の文字列を改行に置き換え
     let text = text.replace("。", "\n");
@@ -68,21 +81,23 @@ pub fn get_sentences(text: &str) -> Result<Vec<Sentence>, Error> {
 
     // Sentence作成
     for s in senstr {
-        let tokens = tokenizer.tokenize(s).unwrap();
+        let tokens = tokenizer.tokenize_with_details(s).unwrap();
         let mut words: Vec<Word> = Vec::new();
         let mut kana = String::new();
         let mut yomi = String::new();
         for t in tokens {
-            if tokenizer.word_detail(t.word_id).unwrap().len() < 8 {
+            let details = t.details.unwrap();
+            if details.len() < 8 {
                 continue;
             }
+
             let w = Word {
                 str: t.text.to_string(),
-                kana: tokenizer.word_detail(t.word_id).unwrap()[7].clone(),
-                wtype: tokenizer.word_detail(t.word_id).unwrap()[0].clone(),
+                kana: details[7].clone(),
+                wtype: details[0].clone(),
             };
-            kana = kana + &tokenizer.word_detail(t.word_id).unwrap()[7].clone();
-            yomi = yomi + &tokenizer.word_detail(t.word_id).unwrap()[8].clone();
+            kana = kana + &details[7].clone();
+            yomi = yomi + &details[8].clone();
             words.push(w);
         }
         let sentence = Sentence {
