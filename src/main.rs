@@ -1,6 +1,7 @@
 use clap::Parser;
 
 fn main() {
+    let arg: Args = Args::parse();
     let text = r#"
 人民の人民による人民のための政治
 アルミ缶の上にあるミカン
@@ -27,6 +28,7 @@ fn main() {
             println!("Error: {}", err);
         }
     }
+    println!("{:?}", arg);
 }
 
 #[derive(Debug, Parser)]
@@ -34,4 +36,8 @@ fn main() {
 struct Args {
     #[clap(short, long, help = "encode")]
     encode: Option<String>,
+    #[clap(short, long, help = "interactive mode")]
+    interactive: bool,
+    #[clap(help = "interactive mode")]
+    path: Option<String>,
 }
