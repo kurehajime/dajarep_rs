@@ -1,22 +1,19 @@
+use std::{fs::File, io::Read};
+
 use clap::Parser;
 
 fn main() {
     let arg: Args = Args::parse();
-    let text = r#"
-人民の人民による人民のための政治
-アルミ缶の上にあるミカン
-トンネルを抜けるとそこは雪国であった
-智代子のチョコ
-布団が吹っ飛んだ
-我輩は猫である
-猫が寝転んだ
-その意見にはついていけん
-靴を靴箱に入れる
-傘を貸さない
-イカは如何なものか
-親譲りの無鉄砲で子供の時から損ばかりしている  
-"#;
-    let result = dajarep::dajarep(text);
+    let mut text = String::new();
+
+    match &arg.path {
+        Some(path) => {
+            text = read_file(path);
+        }
+        None => {}
+    }
+
+    let result = dajarep::dajarep(&text);
 
     match result {
         Ok(words) => {
@@ -29,6 +26,14 @@ fn main() {
         }
     }
     println!("{:?}", arg);
+}
+
+fn read_file(file: &str) -> String {
+    let mut file = File::open(file).expect("file not found");
+    let mut contents = String::new();
+    file.read_to_string(&mut contents)
+        .expect("can't read file.");
+    contents
 }
 
 #[derive(Debug, Parser)]
