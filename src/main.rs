@@ -13,7 +13,7 @@ fn main() {
         None => {}
     }
 
-    let result = dajarep::dajarep(&text);
+    let result = dajarep::dajarep::dajarep(&text);
 
     match result {
         Ok(words) => {
