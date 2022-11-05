@@ -1,5 +1,5 @@
 use std::{
-    fs::File,
+    fs::{self},
     io::{self, stdout, Read, Write},
 };
 
@@ -7,22 +7,12 @@ use clap::Parser;
 
 fn main() {
     let arg: Args = Args::parse();
-    let mut text = String::new();
-
     if arg.interactive {
         interactive();
         return;
     }
 
-    match &arg.path {
-        Some(path) => {
-            text = read_file(path);
-        }
-        None => {
-            text = read_pipe();
-        }
-    }
-
+    let text = read(&arg);
     let result = dajarep::dajarep::dajarep(&text);
 
     match result {
@@ -35,24 +25,39 @@ fn main() {
             println!("Error: {}", err);
         }
     }
-    println!("{:?}", arg);
 }
 
-fn read_file(file: &str) -> String {
-    let mut file = File::open(file).expect("file not found");
-    let mut contents = String::new();
-    file.read_to_string(&mut contents)
-        .expect("can't read file.");
-    contents
-}
-
-fn read_pipe() -> String {
-    let mut contents = String::new();
-    io::stdin()
-        .read_to_string(&mut contents)
-        .expect("pipe error");
-    println!("----{}", contents);
-    contents
+fn read(arg: &Args) -> String {
+    let mut text = String::new();
+    let mut s: Vec<u8> = Vec::new();
+    match &arg.path {
+        Some(path) => {
+            s = fs::read(path).unwrap();
+        }
+        None => {
+            // パイプが来ないことも普通にある
+            match io::stdin().read_to_end(&mut s) {
+                Ok(_) => {}
+                Err(_) => {}
+            };
+        }
+    }
+    match &arg.encode {
+        Some(encode) => {
+            if encode.to_lowercase() == "shift_jis"
+                || encode.to_lowercase() == "sjis"
+                || encode.to_lowercase() == "shift-jis"
+            {
+                let (res, _, _) = encoding_rs::SHIFT_JIS.decode(&s);
+                text = res.into_owned();
+            }
+        }
+        None => {
+            let (res, _, _) = encoding_rs::UTF_8.decode(&s);
+            text = res.into_owned();
+        }
+    }
+    text
 }
 
 fn interactive() {
