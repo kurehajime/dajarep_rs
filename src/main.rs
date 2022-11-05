@@ -1,4 +1,7 @@
-use std::{fs::File, io::Read};
+use std::{
+    fs::File,
+    io::{self, stdout, Read, Write},
+};
 
 use clap::Parser;
 
@@ -11,6 +14,11 @@ fn main() {
             text = read_file(path);
         }
         None => {}
+    }
+
+    if arg.interactive {
+        interactive();
+        return;
     }
 
     let result = dajarep::dajarep::dajarep(&text);
@@ -34,6 +42,28 @@ fn read_file(file: &str) -> String {
     file.read_to_string(&mut contents)
         .expect("can't read file.");
     contents
+}
+
+fn interactive() {
+    loop {
+        print!("> ");
+        stdout().flush().unwrap();
+        let mut word = String::new();
+        io::stdin()
+            .read_line(&mut word)
+            .expect("Failed to read line");
+
+        if word.trim().len() == 0 {
+            break;
+        }
+        let result = dajarep::dajarep::is_dajare(&word);
+        match result {
+            Some(hit) => {
+                println!("-> {}", hit);
+            }
+            None => {}
+        }
+    }
 }
 
 #[derive(Debug, Parser)]

@@ -9,28 +9,30 @@ use regex::Regex;
 use std::fmt::Error;
 
 pub fn dajarep(text: &str) -> Result<Vec<String>, Error> {
-    let sentences = get_sentences(text);
+    let sentences = get_sentences(text).unwrap();
     let mut dajares = vec![];
 
-    match sentences {
-        Ok(result) => {
-            for sentence in result {
-                match is_dajare(&sentence) {
-                    Some(_) => {
-                        dajares.push(sentence.str);
-                    }
-                    None => {}
-                };
+    for sentence in sentences {
+        match is_dajare_by_sentence(&sentence) {
+            Some(_) => {
+                dajares.push(sentence.str);
             }
-        }
-        Err(err) => {
-            println!("Error: {}", err);
-        }
-    };
+            None => {}
+        };
+    }
     Ok(dajares)
 }
 
-fn is_dajare(sentence: &Sentence) -> Option<String> {
+pub fn is_dajare(word: &str) -> Option<String> {
+    let sentences = get_sentences(word).unwrap();
+    if sentences.len() > 0 {
+        is_dajare_by_sentence(&sentences[0])
+    } else {
+        None
+    }
+}
+
+fn is_dajare_by_sentence(sentence: &Sentence) -> Option<String> {
     for word in &sentence.words {
         if word.wtype == "名詞" && word.kana.len() > 1 {
             let w_str = &word.str;
