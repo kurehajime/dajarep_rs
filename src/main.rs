@@ -9,16 +9,18 @@ fn main() {
     let arg: Args = Args::parse();
     let mut text = String::new();
 
+    if arg.interactive {
+        interactive();
+        return;
+    }
+
     match &arg.path {
         Some(path) => {
             text = read_file(path);
         }
-        None => {}
-    }
-
-    if arg.interactive {
-        interactive();
-        return;
+        None => {
+            text = read_pipe();
+        }
     }
 
     let result = dajarep::dajarep::dajarep(&text);
@@ -41,6 +43,15 @@ fn read_file(file: &str) -> String {
     let mut contents = String::new();
     file.read_to_string(&mut contents)
         .expect("can't read file.");
+    contents
+}
+
+fn read_pipe() -> String {
+    let mut contents = String::new();
+    io::stdin()
+        .read_to_string(&mut contents)
+        .expect("pipe error");
+    println!("----{}", contents);
     contents
 }
 
