@@ -44,8 +44,6 @@ $ dajarep test.txt
 [ここ](https://github.com/kurehajime/dajarep_rs/releases)から実行ファイルをダウンロードできます。
 
 
-```
-
 ## オプション
 
 -e  <エンコーディング>：エンコーディング指定  
