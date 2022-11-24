@@ -9,7 +9,8 @@ use regex::Regex;
 use std::fmt::Error;
 
 pub fn dajarep(text: &str) -> Result<Vec<String>, Error> {
-    let sentences = get_sentences(text).unwrap();
+    let sentences = get_sentences(text).unwrap_or_default();
+    ();
     let mut dajares = vec![];
 
     for sentence in sentences {
@@ -24,7 +25,7 @@ pub fn dajarep(text: &str) -> Result<Vec<String>, Error> {
 }
 
 pub fn is_dajare(word: &str) -> Option<String> {
-    let sentences = get_sentences(word).unwrap();
+    let sentences = get_sentences(word).unwrap_or_default();
     if sentences.len() > 0 {
         is_dajare_by_sentence(&sentences[0])
     } else {
@@ -80,7 +81,8 @@ pub fn get_sentences(text: &str) -> Result<Vec<Sentence>, Error> {
 
     // Sentence作成
     for s in senstr {
-        let tokens = tokenizer.tokenize_with_details(s).unwrap();
+        let tokens = tokenizer.tokenize_with_details(s).unwrap_or_default();
+        ();
         let mut words: Vec<Word> = Vec::new();
         let mut kana = String::new();
         let mut yomi = String::new();
@@ -190,7 +192,7 @@ mod test {
 鶏には取り憑かない"#
             .split("\n");
 
-        let result = dajarep(input).unwrap();
+        let result = dajarep(input).unwrap_or_default();
         assert_eq!(answer.clone().count(), result.len());
         answer.zip(result.iter()).for_each(|(a, r)| {
             assert_eq!(a, r);
