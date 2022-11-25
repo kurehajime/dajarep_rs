@@ -1,3 +1,7 @@
+//! #Dajarep
+//!
+//! Dajarepは駄洒落を検出するためのツールです。
+//! 仕組みはこちらの記事を参照。 https://qiita.com/kurehajime/items/a922d42dff5e0f03d32c
 use crate::sentence::Sentence;
 use crate::word::Word;
 use lindera::{
