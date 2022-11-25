@@ -8,6 +8,17 @@ use lindera::{
 use regex::Regex;
 use std::fmt::Error;
 
+/// 与えられた文字列から駄洒落のみを抜き出す
+///
+/// # Examples
+///
+/// ```
+/// let input = r#"トンネルを抜けるとそこは雪国だった
+/// 布団が吹っ飛んだ
+/// 月が綺麗ですね"#;
+///
+/// assert_eq!(Ok(vec!(String::from("布団が吹っ飛んだ"))), dajarep::dajarep::dajarep(input));
+/// ```
 pub fn dajarep(text: &str) -> Result<Vec<String>, Error> {
     let sentences = get_sentences(text).unwrap_or_default();
     ();
@@ -23,7 +34,20 @@ pub fn dajarep(text: &str) -> Result<Vec<String>, Error> {
     }
     Ok(dajares)
 }
-
+/// 与えられた文字列が駄洒落かどうかを判定する。
+/// 駄洒落の場合は殷を踏んでいる箇所を返す。
+///
+/// # Examples
+///
+/// ```
+/// let input = r#"トンネルを抜けるとそこは雪国だった"#;
+///
+/// assert_eq!(None, dajarep::dajarep::is_dajare(input));
+///
+/// let input = r#"布団が吹っ飛んだ"#;
+///
+/// assert_eq!(Some(String::from("フトン")), dajarep::dajarep::is_dajare(input));
+/// ```
 pub fn is_dajare(word: &str) -> Option<String> {
     let sentences = get_sentences(word).unwrap_or_default();
     if sentences.len() > 0 {
@@ -55,7 +79,7 @@ fn is_dajare_by_sentence(sentence: &Sentence) -> Option<String> {
     None
 }
 
-pub fn get_sentences(text: &str) -> Result<Vec<Sentence>, Error> {
+fn get_sentences(text: &str) -> Result<Vec<Sentence>, Error> {
     let mut sentences: Vec<Sentence> = Vec::new();
     let dictionary = DictionaryConfig {
         kind: Some(DictionaryKind::IPADIC),
