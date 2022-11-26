@@ -2,6 +2,8 @@
 name = "dajarep"
 version = "0.1.0"
 edition = "2021"
+license = "MIT"
+description = "駄洒落を検出するライブラリです"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
